@@ -7,7 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Arquivos\Saida\" />
     <Folder Include="Logs\" />
   </ItemGroup>
 

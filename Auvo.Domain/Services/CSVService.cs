@@ -11,6 +11,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using Auvo.Domain.Log;
+using Auvo.Domain.Extensions;
 
 namespace Auvo.Domain.Services
 {
@@ -57,7 +58,7 @@ namespace Auvo.Domain.Services
                     Data = Convert.ToDateTime(item.Data),
                     Entrada = Convert.ToDateTime(item.Data).AddHours(Convert.ToDouble(entrada[0])).AddMinutes(Convert.ToDouble(entrada[1])).AddSeconds(Convert.ToDouble(entrada[2])),
                     Saida = Convert.ToDateTime(item.Data).AddHours(Convert.ToDouble(saida[0])).AddMinutes(Convert.ToDouble(saida[1])).AddSeconds(Convert.ToDouble(saida[2])),
-                    Almoco = FormatAlmoco(Convert.ToDateTime(item.Data), item.Almoco),
+                    Almoco = DateOperations.FormatAlmoco(Convert.ToDateTime(item.Data), item.Almoco),
                 };
 
                 csvFormatted.Add(_csv);
@@ -95,7 +96,7 @@ namespace Auvo.Domain.Services
                     DateTime firstDayOfMonth = new DateTime(func[0].Data.Year, func[0].Data.Month, 1);
                     DateTime lastDayOfMonth = firstDayOfMonth.AddMonths(1).AddDays(-1);
 
-                    int diasUteis = GetBusinessDays(firstDayOfMonth, lastDayOfMonth);
+                    int diasUteis = DateOperations.GetBusinessDays(firstDayOfMonth, lastDayOfMonth);
                     int diasUteisTrabalhados = 0;
                     _func.Nome = func[0].Nome;
                     _func.Codigo = func[0].Codigo;
@@ -107,7 +108,7 @@ namespace Auvo.Domain.Services
                         decimal horasTrabalhadasNoDia = decimal.Round(Convert.ToDecimal((itemFunc.Saida - itemFunc.Entrada).TotalHours - itemFunc.Almoco), 2, MidpointRounding.ToZero);
                         decimal totalReceberDia = (itemFunc.ValorHora * horasTrabalhadasNoDia);
                         valorhr = itemFunc.ValorHora;
-                        if (verifyIfWeekend(itemFunc.Data))
+                        if (DateOperations.verifyIfWeekend(itemFunc.Data))
                         {
                             _func.DiasExtras += 1;
                             saidaJson.TotalExtras += totalReceberDia;
@@ -148,36 +149,7 @@ namespace Auvo.Domain.Services
             return saidaJson;
         }
 
-        private static int GetBusinessDays(DateTime startD, DateTime endD)
-        {
-            double calcBusinessDays =
-                1 + ((endD - startD).TotalDays * 5 -
-                (startD.DayOfWeek - endD.DayOfWeek) * 2) / 7;
 
-            if (endD.DayOfWeek == DayOfWeek.Saturday) calcBusinessDays--;
-            if (startD.DayOfWeek == DayOfWeek.Sunday) calcBusinessDays--;
-
-            return Convert.ToInt32(calcBusinessDays);
-        }
-        private static bool verifyIfWeekend(DateTime day)
-        {
-            if (day.DayOfWeek == DayOfWeek.Saturday) return true;
-            if (day.DayOfWeek == DayOfWeek.Sunday) return true;
-
-            return false;
-        }
-        private double FormatAlmoco(DateTime dia, string almoco)
-        {
-            DateTime _entrada;
-            DateTime _volta;
-            string[] _almoco = almoco.Split("-");
-            string[] hrEntrada = _almoco[0].Trim().Split(":");
-            string[] hrSaida = _almoco[1].Trim().Split(":");
-
-            _entrada = dia.AddHours(Convert.ToDouble(hrEntrada[0])).AddMinutes(Convert.ToDouble(hrEntrada[1]));
-            _volta = dia.AddHours(Convert.ToDouble(hrSaida[0])).AddMinutes(Convert.ToDouble(hrSaida[1]));
-            return (_volta - _entrada).TotalHours;
-        }
 
 
     }
