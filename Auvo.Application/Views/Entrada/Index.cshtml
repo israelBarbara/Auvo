@@ -1,0 +1,56 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    ViewData["Title"] = "Entrada";
+}
+
+<h1>@ViewData["Title"]</h1>
+<hr />
+<label for="fname">Nome da pasta</label> <br/>
+<input type="text" id="Pasta" name="fname" placeholder="Nome da pasta">
+<button id="button1">Iniciar processamento</button>
+<div id="emptyDiv"></div>
+
+    <div class="modal fade" id="modalMessage" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Mensagem</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </button>
+          </div>
+          <div class="modal-body">
+           <div id ="msg" style="font-size: 20px;"> </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Dismiss</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+
+@section scripts {
+<script>
+
+
+
+
+    $(document).ready(function(){
+        $("#button1").on('click',function(){
+            var path = "/Entrada/IniciarProcessamento/?param="+ document.getElementById('Pasta').value;
+            $.post(path ,function(data){
+                $("#emptyDiv").html(data.def);
+            }).then(function(data){
+                document.getElementById('msg').innerHTML = data.message;
+                $('#modalMessage').modal('show');         
+        })
+
+        })
+    })
+
+</script>
+}
+
