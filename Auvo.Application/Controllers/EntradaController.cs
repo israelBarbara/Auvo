@@ -48,9 +48,9 @@ namespace Auvo.Application.Controllers
                 Log.AdicionarTxt(logPath, $"Processamento CSV {fileName} iniciado");
                 FileStream stream = System.IO.File.Open(file, FileMode.Open);
                 List<CSVRequest> employees = _csvService.ReadCSV<CSVRequest>(stream).ToList();
+                stream.Close();
                 IEnumerable<CSVFormatted> csvFinal = await _csvService.CSVFormat(employees);
                 SaidaJson _saidaJson = await _csvService.GenerateJson(csvFinal, fileName, logPath);
-                stream.Close();
                 finalResult.Add(_saidaJson);
             }
             string json = JsonConvert.SerializeObject(finalResult);
