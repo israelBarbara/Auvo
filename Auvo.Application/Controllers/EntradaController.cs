@@ -38,7 +38,6 @@ namespace Auvo.Application.Controllers
                 Directory.CreateDirectory(outputFolder);
             }
             
-
             string[] files = Directory.GetFiles(path, "*.csv", SearchOption.TopDirectoryOnly);
             Log.GravaLog(param, $"Processamento Pasta iniciado");
             string logPath = Path.Combine(Directory.GetCurrentDirectory(), "Logs", $"{param}");
